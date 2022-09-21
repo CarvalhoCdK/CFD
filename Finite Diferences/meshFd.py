@@ -59,7 +59,7 @@ class Mesh(object):
              s
         
         identifica os nós vizinhos por seus números 
-        na ordem [w, e, s, n]. O valor -1 indica que
+        na ordem [W, E, S, N]. O valor -1 indica que
         o nó é adjacente à respectiva fronteira.
 
         '''
@@ -73,7 +73,8 @@ class Mesh(object):
 
         margin = 1e-6 * min(deltax, deltay)
 
-        borders = np.empty([nx * ny, 4])
+        keys = ['W', 'E', 'S', 'N']
+        borders = [None] * (nx * ny)
         for i, el in enumerate(self.nodes):
                   
             xn = el[0]
@@ -91,7 +92,7 @@ class Mesh(object):
             border[bc] = -1
 
 
-            borders[i, :] = border
+            borders[i] = dict(zip(keys, border))
 
         return borders
         
