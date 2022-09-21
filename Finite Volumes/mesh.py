@@ -1,5 +1,4 @@
 import numpy as np
-from pygments import lex
 
 
 class Mesh(object):
