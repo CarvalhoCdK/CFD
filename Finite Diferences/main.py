@@ -37,15 +37,17 @@ hk = h * mesh.deltax / k
 def boundary2(hk, Tc):
     '''
     Calcula os termos da equação na forma:
-    Tp = aw*Tw + ae*Te + an*Tn + bc*Tc
-    [aw, ae, an, bc]
+    ap*tp+ aw*Tw + ae*Te + an*Tn + bc*Tc = 0
+    [ap, aw, ae, an, bc]
     '''
-    an = 1 / (hk + 2)
-    ae = an / 2
-    aw = ae
-    bc = hk / (hk + 2)
+    ap = -2 * (hk + 2)
 
-    a = np.array([aw, ae, an, bc*Tc])
+    an = 2
+    ae = 1
+    aw = 1
+    bc = 2*hk*Tc
+
+    a = np.array([ap, aw, ae, an, bc])
 
     return a
 
@@ -56,10 +58,11 @@ def boundary2(hk, Tc):
 dof = (nx) * (ny)
 u_dof = np.ones(dof, dtype=bool) # Guarda os nós com temperatura por bc_1
 
-Temperatures = np.zeros(dof)
+Temperatures = np.ones(dof)*T1
 B = np.zeros(dof)
 A = np.zeros((dof, dof))
 
+# Constrói os coeficientes adequando as condições de contorno
 for i, node in enumerate(mesh.borders):
        
     bc_1 = node['N'] == -1 or node['W'] == -1 or node['E'] == -1
@@ -67,34 +70,43 @@ for i, node in enumerate(mesh.borders):
     bc_2 = node['S'] == -1
 
     if bc_1:
-        # print(f'Node: {i} : {bc_1}')
+        # Fronteira de temperatura prescrita
+
+        for key, value in node.items():
+            if value != -1:
+                
+                B[value] += T1
+
         Temperatures[i] = T1
-        A[i,i] = 1
+        #A[i,i] = 1
         u_dof[i] = False
 
     elif bc_2:
-        # W, E, N, B
+        # Fronteira convectiva
 
         a = boundary2(hk, Tc)
 
-        A[i, node['W']] = a[0]
-        A[i, node['E']] = a[1]
-        A[i, node['N']] = a[2]
+        A[i, i] = a[0]
+        A[i, node['W']] = a[1]
+        A[i, node['E']] = a[2]
+        A[i, node['N']] = a[3]
 
-        B[i] = a[3]
+        B[i] += a[4]
 
     else:
-        ai = 1 / 4
-        A[i, node['W']] = ai
-        A[i, node['E']] = ai
-        A[i, node['S']] = ai
-        A[i, node['N']] = ai
+        # Nó interior
+        
+        A[i, i] = -4
+        A[i, node['W']] = 1
+        A[i, node['E']] = 1
+        A[i, node['S']] = 1
+        A[i, node['N']] = 1
 
   
 # Simplifica as equações conforme bc_1
-Auu = A#[u_dof, :][:, u_dof]
-Buu = B#[u_dof]
-Tuu = Temperatures#[u_dof]
+Auu = A[u_dof, :][:, u_dof]
+Buu = B[u_dof]
+Tuu = Temperatures[u_dof]
 
 # Solver:
 
@@ -104,9 +116,10 @@ it = 1
 max_it = 1e3
 
 diff = T1
-tol = 1e-2
+tol = 1e-3
 
 print('Iniciando solver')
+
 
 while diff >= tol:
 
@@ -115,7 +128,12 @@ while diff >= tol:
     
     for i, tp in enumerate(Tuu):
 
-        Tuu[i] = np.dot(Auu[0,:], Tuu) + Buu[i]
+
+        App = np.append(Auu[i,:i], Auu[i, i+1:])
+        Tpp = np.append(Tuu[:i], Tuu[i+1:])
+        Bpp = np.append(Buu[:i], Buu[i+1:])
+
+        Tuu[i] = -(np.dot(App, Tpp) + Buu[i]) / Auu[i, i]
 
     diff = np.sqrt(np.dot(Tuu-Tuu0, Tuu-Tuu0))
     it += 1
@@ -125,8 +143,27 @@ while diff >= tol:
         break
 
 
-print(Tuu)
+# Plots
+Tplots = np.ones(dof)*T1
+j = 0
 
-# Set temperature boundary
+for i, tp in enumerate(u_dof):
+    if tp:
+        Tplots[i] = Tuu[j]
+        j += 1
 
-# Convective boundary
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(6,6))
+
+X = np.linspace(0, 0.4, 142)
+Y = np.linspace(0, 0.45, 17767)
+
+Xmesh, Ymesh = np.meshgrid(X,Y)
+
+T = np.random.randint(300, 1000, Xmesh.shape)
+
+plt.pcolormesh(X, Y, T)
+plt.colorbar()
+plt.show()
