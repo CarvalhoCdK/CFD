@@ -1,6 +1,7 @@
 import numpy as np
 
 from scipy.sparse import csr_matrix
+from scipy import linalg
 
 from meshFd import Mesh
 
@@ -33,7 +34,7 @@ Tc = 300
 
 hk = h * mesh.deltax / k
 
-def boundary2(hk):
+def boundary2(hk, Tc):
     '''
     Calcula os termos da equação na forma:
     Tp = aw*Tw + ae*Te + an*Tn + bc*Tc
@@ -44,16 +45,16 @@ def boundary2(hk):
     aw = ae
     bc = hk / (hk + 2)
 
-    A = np.array([aw, ae, an, bc])
+    a = np.array([aw, ae, an, bc*Tc])
 
-    return A
+    return a
 
 
 # Vetor de temperatura nodais e matrix de coeficientes
-# [A][T] = [B]
+# [Tp] = [A][T] = [B]
 
 dof = (nx) * (ny)
-set_dof = [] # Guarda os nós com temperatura por bc_1
+u_dof = np.ones(dof, dtype=bool) # Guarda os nós com temperatura por bc_1
 
 Temperatures = np.zeros(dof)
 B = np.zeros(dof)
@@ -68,12 +69,13 @@ for i, node in enumerate(mesh.borders):
     if bc_1:
         # print(f'Node: {i} : {bc_1}')
         Temperatures[i] = T1
-        set_dof.append(i)
+        A[i,i] = 1
+        u_dof[i] = False
 
     elif bc_2:
         # W, E, N, B
 
-        a = boundary2(hk)
+        a = boundary2(hk, Tc)
 
         A[i, node['W']] = a[0]
         A[i, node['E']] = a[1]
@@ -90,11 +92,40 @@ for i, node in enumerate(mesh.borders):
 
   
 # Simplifica as equações conforme bc_1
+Auu = A#[u_dof, :][:, u_dof]
+Buu = B#[u_dof]
+Tuu = Temperatures#[u_dof]
+
+# Solver:
 
 
 
+it = 1
+max_it = 1e3
+
+diff = T1
+tol = 1e-2
+
+print('Iniciando solver')
+
+while diff >= tol:
+
+    Tuu0 = np.copy(Tuu)
+    print(f'Número da iteração: {it}')
+    
+    for i, tp in enumerate(Tuu):
+
+        Tuu[i] = np.dot(Auu[0,:], Tuu) + Buu[i]
+
+    diff = np.sqrt(np.dot(Tuu-Tuu0, Tuu-Tuu0))
+    it += 1
+
+    if it > max_it:
+        print('Excedido limite de iterações')
+        break
 
 
+print(Tuu)
 
 # Set temperature boundary
 
