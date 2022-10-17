@@ -1,14 +1,14 @@
 import numpy as np
+from time import perf_counter
 
-from scipy.sparse import csr_matrix
-from scipy import linalg
 
 from meshFd import Mesh
+from plots import plot_field
 
 
 # Geometria
-nx = 5
-ny = 5
+nx = 4
+ny = 4
 lx = 1
 ly = 1
 
@@ -20,6 +20,11 @@ mesh = Mesh(nx-1, ny-1, lx, ly)
 
 nodes = mesh.nodes
 borders = mesh.borders
+
+# Propriedades do solver
+
+max_it = 1e3
+tol = 0.1#1e-3
 
 # Condições de fronteira
 # Tipo 1: temperatura mantida em T1 = 500k
@@ -108,24 +113,20 @@ Auu = A[u_dof, :][:, u_dof]
 Buu = B[u_dof]
 Tuu = Temperatures[u_dof]
 
-# Solver:
 
-
-
-it = 1
-max_it = 1e3
-
+# Resolvendo Iterativamente
 diff = T1
-tol = 1e-3
+it = 1
 
 print('Iniciando solver')
-
+start_time = perf_counter()
 
 while diff >= tol:
 
-    Tuu0 = np.copy(Tuu)
-    print(f'Número da iteração: {it}')
+    #print(f'Número da iteração: {it}')
     
+    Tuu0 = np.copy(Tuu)
+        
     for i, tp in enumerate(Tuu):
 
 
@@ -135,35 +136,28 @@ while diff >= tol:
 
         Tuu[i] = -(np.dot(App, Tpp) + Buu[i]) / Auu[i, i]
 
-    diff = np.sqrt(np.dot(Tuu-Tuu0, Tuu-Tuu0))
+    diff = np.max(np.abs(Tuu-Tuu0))# np.sqrt(np.dot(Tuu-Tuu0, Tuu-Tuu0))
     it += 1
 
     if it > max_it:
         print('Excedido limite de iterações')
         break
 
+end_time = perf_counter()
+print(f'Tempo de execução: {end_time - start_time}')
+print(f'Número de iterações: {it}')
+print(f'Erro: {diff}')
+print(f'Temperatura no centro da face sul: {Tuu[int(np.floor(nx/2))]}')
 
 # Plots
-Tplots = np.ones(dof)*T1
+Tplot = np.ones(dof)*T1
 j = 0
 
 for i, tp in enumerate(u_dof):
     if tp:
-        Tplots[i] = Tuu[j]
+        Tplot[i] = Tuu[j]
         j += 1
 
+shading = 'nearest'
+plot_field(nx, ny, lx, ly, Tplot)
 
-import matplotlib.pyplot as plt
-
-fig, ax = plt.subplots(figsize=(6,6))
-
-X = np.linspace(0, 0.4, 142)
-Y = np.linspace(0, 0.45, 17767)
-
-Xmesh, Ymesh = np.meshgrid(X,Y)
-
-T = np.random.randint(300, 1000, Xmesh.shape)
-
-plt.pcolormesh(X, Y, T)
-plt.colorbar()
-plt.show()
