@@ -1,13 +1,15 @@
-from re import L
-from solver import jacobi
-from solver import tdma
+#from re import L
+
 import numpy as np
+from time import perf_counter
 
 from mesh import Mesh
+from solver import jacobi
+from solver import tdma
 
 
 # Geometria
-n = 6
+n = 100
 
 L = 0.05
 D = 0.01
@@ -19,17 +21,12 @@ model = {'K' : 10.0,
          'Tb' : 373,
          'Tamb' :293,
          'T0' : 293,
-         'dx' : L/n,
-         'dt' : 0.1}
-#K = 10.0
-#H = 5.0
-#Alpha = 1e-6
+         'dx' : L/(n),
+         'dt' : 0.5}
 
-#Tb = 373
-#Tamb = 293
+tol = 0.001
+max_it = 1e4
 
-#dx = L / n
-#dt = 1
 
 def dirichlet(model):
     """
@@ -101,11 +98,14 @@ def internal_volume(model):
     hh = 4*H / (K*D)
 
     a0 = dx / (Alpha*dt)
-    ap = a0 + 1 / dx + hh*dx
+    ap = a0 + 2 / dx + hh*dx
     aw = ae = 1 / dx
     b = hh*Tamb*dx
     
     return np.array([ap, aw, ae, a0, b])
+
+# Constroi matrizes da forma:
+# [A][T] = [b]+[A0][T0] 
 
 A = np.zeros((n,n))
 A0 = np.zeros(n)
@@ -141,7 +141,6 @@ for i in range(n):
 print(A)
 
 # SOLVER
-tol = 1e-2
 diff = model['Tb']
 it = 1
 
@@ -150,18 +149,25 @@ T = model['T0'] * np.ones(n)
 #T00 = np.copy(T)
 #B = b +  np.multiply(A0, T00)
 
-while diff >= tol:
+print('Iniciando solver')
+start_time = perf_counter()
+while diff >= tol and it < max_it:
 
-    print(it)
-    print(T)
+    #print(it)
+    #print(T)
 
     T00 = np.copy(T)
 
     B = b + np.multiply(A0, T00)
 
-    T, itj = jacobi(A, B, T00)
+    T = tdma(A, B, T00)
+    #T, itj = jacobi(A, B, T00)
+    #print(itj)
 
     diff = np.max(np.abs(T - T00))
     it += 1
 
-#print(T)
+end_time = perf_counter()
+print(f'Tempo de execução: {end_time - start_time}')
+print(f'Número de iterações: {it}')
+print(T)   

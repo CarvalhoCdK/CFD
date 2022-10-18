@@ -93,14 +93,14 @@ def jacobi(A, B, t_initial):
     [A][t] = [B]
     """
     n = A.shape[0]
-    t = t_initial#np.ones(n) * t_initial
+    t = np.copy(t_initial, subok=True)
 
     diff = t_initial[0]
-    tol = t_initial[0] * 0.01
+    tol = t_initial[0] * 1e-6
     max_it = 1e3
     it = 0
 
-    while diff >= tol:
+    while abs(diff) >= tol:
 
         t0 = np.copy(t)
 
@@ -114,6 +114,8 @@ def jacobi(A, B, t_initial):
         diff = np.max(np.abs(t-t0))
 
         it += 1
+        print(f'it : {it}')
+        #print(f'Iguais: {t == t0}')
         if it > max_it:
             print('Excedido limite de iterações')
             break

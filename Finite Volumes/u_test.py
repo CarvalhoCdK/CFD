@@ -83,7 +83,7 @@ def test_tdma():
 def test_jacobi():
     """
     """
-    data = test_data_1D()
+    data = test_data_2D()
     A = data['A']
     B = data['B']
     t0 = data['Solução direta']
@@ -98,6 +98,7 @@ def test_jacobi():
 
     #print(f'Solução direta : {t0}')
     print(f'Jacobi T : {solution}')
+    print(f'Soluçaõ direta : {t0}')
     print(f'# de iterações : {it}')
     print(f'Tempo de execução: {end_time - start_time}')
 
