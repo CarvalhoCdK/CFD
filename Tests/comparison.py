@@ -94,4 +94,9 @@ def TDMA(T_inf,T_b,k,D,L,h,alfa,delta_t,Tp_zero,n_volumes,criterio):
     print(f'Tempo : {fim - inicio}')
     return Tm,cont,x
 #TDMA(T_inf,T_b,k,D,L,h,alfa,delta_t,Tp_zero,n_volumes,criterio): 
-TDMA(293,373,10,0.01,0.05,5,1*10**(-6),0.5,293,100,0.001)
+
+Temperaturas, cont, x = TDMA(293,373,10,0.01,0.05,5,1*10**(-6),0.5,293,10,0.001)
+
+print(f'Temperaturas: {Temperaturas} \n')
+print(f'cont: {cont} \n')
+print(f'x: {x} \n')
