@@ -47,15 +47,13 @@ def test_data_2D():
 
 def test_data_1D():
     """
-    Test problem setup
-    Incropera 4.3
     """
-    A = np.array([[-2, 1, 0, 0],
+    A = -np.array([[-2, 1, 0, 0],
                   [1, -2, 1, 0],
                   [0, 1, -2, 1],
                   [0, 0, 1, -2]])
 
-    B = np.array([-100, 0, 0, -1000])
+    B = -np.array([-100, 0, 0, -1000])
 
     direct_solution = np.linalg.solve(A, B)
 
@@ -89,11 +87,12 @@ def test_jacobi():
     A = data['A']
     B = data['B']
     t0 = data['Solução direta']
+    t_initial = np.ones(A.shape[0])
 
     
     start_time = perf_counter()
 
-    solution, it = jacobi(A, B)
+    solution, it = jacobi(A, B, t_initial)
 
     end_time = perf_counter()
 

@@ -7,8 +7,8 @@ from plots import plot_field
 
 
 # Geometria
-nx = 4
-ny = 4
+nx = 40
+ny = 40
 lx = 1
 ly = 1
 
@@ -24,7 +24,7 @@ borders = mesh.borders
 # Propriedades do solver
 
 max_it = 1e3
-tol = 0.1#1e-3
+tol = 0.01#1e-3
 
 # Condições de fronteira
 # Tipo 1: temperatura mantida em T1 = 500k
@@ -130,11 +130,16 @@ while diff >= tol:
     for i, tp in enumerate(Tuu):
 
 
-        App = np.append(Auu[i,:i], Auu[i, i+1:])
-        Tpp = np.append(Tuu[:i], Tuu[i+1:])
-        Bpp = np.append(Buu[:i], Buu[i+1:])
+        #App = np.append(Auu[i,:i], Auu[i, i+1:])
+        #Tpp = np.append(Tuu[:i], Tuu[i+1:])
+        #Bpp = np.append(Buu[:i], Buu[i+1:])
 
-        Tuu[i] = -(np.dot(App, Tpp) + Buu[i]) / Auu[i, i]
+        #Tuu[i] = -(np.dot(App, Tpp) + Buu[i]) / Auu[i, i]
+
+        pfront = np.dot(Auu[i,:i], Tuu[:i])
+        pback = np.dot(Auu[i, i+1:], Tuu[i+1:])
+
+        Tuu[i] = -(pfront + pback + Buu[i]) / Auu[i, i]
 
     diff = np.max(np.abs(Tuu-Tuu0))# np.sqrt(np.dot(Tuu-Tuu0, Tuu-Tuu0))
     it += 1

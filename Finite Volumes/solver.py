@@ -87,16 +87,16 @@ def gauss_seidel(A, B, t_initial=1.0):
     return t, it
 
 
-def jacobi(A, B, t_initial=1.0):
+def jacobi(A, B, t_initial):
     """
     Linear system solver using Jacobi's method.
     [A][t] = [B]
     """
     n = A.shape[0]
-    t = np.ones(n) * t_initial
+    t = t_initial#np.ones(n) * t_initial
 
-    diff = t_initial
-    tol = t_initial * 0.01
+    diff = t_initial[0]
+    tol = t_initial[0] * 0.01
     max_it = 1e3
     it = 0
 

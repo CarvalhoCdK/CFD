@@ -1,3 +1,4 @@
+from msilib.schema import Class
 import numpy as np
 
 
@@ -117,3 +118,12 @@ class Mesh(object):
             borders[i, :] = border
 
         return borders
+
+
+class Mesh1D(object):
+    """
+    """
+
+    def __init__(self, nx, ny, lx, ly):
+        pass
+
