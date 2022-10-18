@@ -1,5 +1,4 @@
 import numpy as np
-import numba
 
 
 def tdma(A, B, t_initial=1.0):
@@ -27,7 +26,7 @@ def tdma(A, B, t_initial=1.0):
     d[n-1] = B[n-1]
 
     # Internal volumes terms
-    for i in range(1, n-1):
+    for i in np.arange(1,n-1):#range(1, n-1):
       a[i] = A[i,i]   # Ap
       b[i] = A[i,i+1] # Ae
       c[i] = A[i,i-1] # Aw
@@ -39,7 +38,7 @@ def tdma(A, B, t_initial=1.0):
     p[0] = -b[0] / a[0]
     q[0] = d[0] / a[0]
 
-    for i in range(1, n):
+    for i in np.arange(1,n):#range(1, n):
       p[i] = -b[i] / (a[i] + c[i]*p[i-1])
       q[i] = (d[i] - c[i]*q[i-1]) / (a[i] + c[i]*p[i-1])
 
@@ -47,7 +46,7 @@ def tdma(A, B, t_initial=1.0):
     ## Backward loop for t
     t[n-1] = q[n-1]
 
-    for i in range(n-2,-1,-1):
+    for i in np.arange(n-2,-1,-1):#range(n-2,-1,-1):
       t[i] = p[i]*t[i+1] + q[i]
 
     return t
