@@ -62,7 +62,7 @@ def gauss_seidel(A, B, tol, t_initial=1.0):
 
     diff = t_initial[0]
     #tol = 1e-3#t_initial[0] * 0.01
-    max_it = 1e3
+    max_it = 1e6
     it = 0
 
     while diff >= tol:
@@ -71,10 +71,15 @@ def gauss_seidel(A, B, tol, t_initial=1.0):
 
         for i in range(n):
 
-          App = np.append(A[i,:i], A[i, i+1:])
-          Tpp = np.append(t[:i], t[i+1:])
+          #App = np.append(A[i,:i], A[i, i+1:])
+          #Tpp = np.append(t[:i], t[i+1:])
             
-          t[i] = (-np.dot(App, Tpp) + B[i]) / A[i, i]
+          #t[i] = (-np.dot(App, Tpp) + B[i]) / A[i, i]
+
+          pfront = np.dot(A[i,:i], t[:i])
+          pback = np.dot(A[i, i+1:], t[i+1:])
+
+          t[i] = (-pfront - pback + B[i]) / A[i, i]
 
         diff = np.max(np.abs(t-t0))
 
@@ -96,7 +101,7 @@ def jacobi(A, B, tol, t_initial):
 
     diff = t_initial[0]
     #tol = t_initial[0] * 1e-6
-    max_it = 1e3
+    max_it = 1e6
     it = 0
 
     while abs(diff) >= tol:
@@ -105,10 +110,15 @@ def jacobi(A, B, tol, t_initial):
 
         for i in range(n):
 
-          App = np.append(A[i,:i], A[i, i+1:])
-          Tpp = np.append(t0[:i], t0[i+1:])
+          #App = np.append(A[i,:i], A[i, i+1:])
+          #Tpp = np.append(t0[:i], t0[i+1:])
             
-          t[i] = (-np.dot(App, Tpp) + B[i]) / A[i, i]
+          #t[i] = (-np.dot(App, Tpp) + B[i]) / A[i, i]
+
+          pfront = np.dot(A[i,:i], t0[:i])
+          pback = np.dot(A[i, i+1:], t0[i+1:])
+
+          t[i] = (-pfront - pback + B[i]) / A[i, i]
 
         diff = np.max(np.abs(t-t0))
 

@@ -2,6 +2,7 @@ from solver import gauss_seidel
 import numpy as np
 import matplotlib.pyplot as plt
 from time import perf_counter
+from scipy.sparse.linalg import isolve
 
 from mesh import Mesh
 from solver import jacobi
@@ -124,7 +125,7 @@ def lista5_2(n, tol, model, solver):
     
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Tempo de execução: {end_time - start_time}')
+        print(f'Tempo de execução: {end_time - start_time} \n')
     
     
     elif solver == 'Jacobi':
@@ -138,6 +139,7 @@ def lista5_2(n, tol, model, solver):
         end_time = perf_counter()
         print(f'Solução {n} volumes')
         print(f'Número de iterações: {itj}')
+        print(f'Tempo de execução: {end_time - start_time} \n')
     
 
     elif solver == 'Gauss-Seidel':
@@ -151,11 +153,27 @@ def lista5_2(n, tol, model, solver):
         end_time = perf_counter()
         print(f'Solução {n} volumes')
         print(f'Número de iterações: {itj}')
+        print(f'Tempo de execução: {end_time - start_time} \n')
+
+
+    elif solver == 'Gradientes Conjugados':
+
+        print('Iniciando solver: Gradientes Conjugados')
+        T00 = np.copy(T)
+
+        start_time = perf_counter()
+        
+        T, itj = isolve.cg (A, B, tol=1e-3)
+
+        end_time = perf_counter()
+        print(f'Solução {n} volumes')
+        print(f'Número de iterações: {itj}')
+        print(f'Tempo de execução: {end_time - start_time} \n')
 
     return T
 
 
-n = 5
+n = 100
 L = 3
 tol = 1e-3
 
@@ -170,7 +188,8 @@ model = {'K' : 1.0,
 T_tdma = lista5_2(n, tol, model, 'TDMA')
 T_jacobi = lista5_2(n, tol, model, 'Jacobi')
 T_gauss = lista5_2(n, tol, model, 'Gauss-Seidel')
+T_cg = lista5_2(n, tol, model, 'Gradientes Conjugados')
 
-print(T_tdma)
-print(T_jacobi)
-print(T_gauss)
+#print(T_tdma)
+#print(T_jacobi)
+#print(T_gauss)
