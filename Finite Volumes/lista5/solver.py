@@ -52,7 +52,7 @@ def tdma(A, B, t_initial=1.0):
     return t
 
 
-def gauss_seidel(A, B, t_initial=1.0):
+def gauss_seidel(A, B, tol, t_initial=1.0):
     """
     Linear system solver using Jacobi's method.
     [A][t] = [B]
@@ -60,8 +60,8 @@ def gauss_seidel(A, B, t_initial=1.0):
     n = A.shape[0]
     t = np.ones(n) * t_initial
 
-    diff = t_initial
-    tol = t_initial * 0.01
+    diff = t_initial[0]
+    #tol = 1e-3#t_initial[0] * 0.01
     max_it = 1e3
     it = 0
 
@@ -86,7 +86,7 @@ def gauss_seidel(A, B, t_initial=1.0):
     return t, it
 
 
-def jacobi(A, B, t_initial):
+def jacobi(A, B, tol, t_initial):
     """
     Linear system solver using Jacobi's method.
     [A][t] = [B]
@@ -95,7 +95,7 @@ def jacobi(A, B, t_initial):
     t = np.copy(t_initial, subok=True)
 
     diff = t_initial[0]
-    tol = t_initial[0] * 1e-6
+    #tol = t_initial[0] * 1e-6
     max_it = 1e3
     it = 0
 
@@ -113,7 +113,7 @@ def jacobi(A, B, t_initial):
         diff = np.max(np.abs(t-t0))
 
         it += 1
-        print(f'it : {it}')
+        #print(f'it : {it}')
         #print(f'Iguais: {t == t0}')
         if it > max_it:
             print('Excedido limite de iterações')
