@@ -18,7 +18,7 @@ def lista5_1(n, tol, model):
 
 
     #tol = 0.001
-    max_it = 1e4
+    max_it = 1e6
 
 
     def dirichlet(model):
@@ -260,15 +260,16 @@ def analitic(n, model):
 xanl, Tanl = analitic(100, model)
 
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(x10, T10, label='10 Volumes', linestyle='dashed')#, marker='.')
-ax.plot(x20, T20, label='20 Volumes', linestyle='dashed')#, marker='.')
-ax.plot(x40, T40, label='40 Volumes', linestyle='dashed')#, marker='.')
-ax.plot(x80, T80, label='80 Volumes', linestyle='dashed')#, marker='.')  
+ax.plot(x10, T10, label='10 Volumes', linestyle='dashed', marker='.')
+ax.plot(x20, T20, label='20 Volumes', linestyle='dashed', marker='+')
+ax.plot(x40, T40, label='40 Volumes', linestyle='dotted')#, marker='.')
+ax.plot(x80, T80, label='80 Volumes', linestyle='dashdot')#, marker='.')  
 ax.plot(x160, T160, label='160 Volumes', linestyle='dashed')#, marker='.')
-ax.plot(xanl, Tanl, label='Solução analítica')
-ax.set_xlabel('x [m]')  
-ax.set_ylabel('Temperatura [K]')  
-ax.set_title('Soluções para diferentes discretizações.') 
+#ax.plot(xanl, Tanl, label='Solução analítica')
+ax.set_xlabel('x [m]', fontsize=14)  
+ax.set_ylabel('Temperatura [K]', fontsize=14)
+ax.tick_params(axis='both', which='major', labelsize=12)
+#ax.set_title('Soluções para diferentes discretizações.') 
 ax.legend()  
 ax.grid()
 fig.show()
@@ -305,17 +306,31 @@ model['dx'] = L/n
 T6 = lista5_1(n, tol, model)
 
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(x, T3, label='Tolerância : 1e-3', linestyle='dashed')#, marker='.')
-ax.plot(x, T4, label='Tolerância : 1e-4', linestyle='dashed')#, marker='.')
+ax.plot(x, T3, label='Tolerância : 1e-3', linestyle='dotted')#, marker='.')
+ax.plot(x, T4, label='Tolerância : 1e-4', linestyle='dashdot')#, marker='.')
 ax.plot(x, T5, label='Tolerância : 1e-5', linestyle='dashed')#, marker='.')
 ax.plot(x, T6, label='Tolerância : 1e-6', linestyle='dashed')#, marker='.')  
-ax.plot(xanl, Tanl, label='Solução analítica')
-ax.set_xlabel('x [m]')  
-ax.set_ylabel('Temperatura [K]')  
-ax.set_title('Soluções para diferentes tolerâncias considerando 80 volumes finitos') 
+#ax.plot(xanl, Tanl, label='Solução analítica')
+ax.set_xlabel('x [m]', fontsize=14)  
+ax.set_ylabel('Temperatura [K]', fontsize=14)
+ax.tick_params(axis='both', which='major', labelsize=12)
+#ax.set_title('Soluções para diferentes tolerâncias considerando 80 volumes finitos') 
 ax.legend()  
 ax.grid()
 fig.show()
 
 
 ## 160 Volumes
+fig, ax = plt.subplots(figsize=(10, 6))
+#ax.plot(x, T3, label='Tolerância : 1e-3', linestyle='dotted')#, marker='.')
+#ax.plot(x, T4, label='Solução Numérica', linestyle='dashed')#, marker='.')
+#ax.plot(x, T5, label='Tolerância : 1e-5', linestyle='dashed')#, marker='.')
+ax.plot(x, T6, label='Tolerância : 1e-6', linestyle='dashed')#, marker='.')  
+ax.plot(xanl, Tanl, label='Solução Analítica')
+ax.set_xlabel('x [m]', fontsize=14)  
+ax.set_ylabel('Temperatura [K]', fontsize=14)
+ax.tick_params(axis='both', which='major', labelsize=12)
+#ax.set_title('Soluções para diferentes tolerâncias considerando 80 volumes finitos') 
+ax.legend()  
+ax.grid()
+fig.show()

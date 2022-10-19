@@ -1,4 +1,3 @@
-from solver import gauss_seidel
 import numpy as np
 import matplotlib.pyplot as plt
 from time import perf_counter
@@ -7,7 +6,8 @@ from scipy.sparse.linalg import isolve
 from mesh import Mesh
 from solver import jacobi
 from solver import tdma
-
+from solver import sor
+from solver import gauss_seidel
 
 
 def lista5_2(n, tol, model, solver):
@@ -156,6 +156,21 @@ def lista5_2(n, tol, model, solver):
         print(f'Tempo de execução: {end_time - start_time} \n')
 
 
+    elif solver == 'S.O.R':
+        print('Iniciando solver: S.O.R')
+        T00 = np.copy(T)
+        w = 1.5
+
+        start_time = perf_counter()
+        
+        T, itj = sor(A, B, tol, w, T00)
+
+        end_time = perf_counter()
+        print(f'Solução {n} volumes')
+        print(f'Número de iterações: {itj}')
+        print(f'Tempo de execução: {end_time - start_time} \n')
+
+
     elif solver == 'Gradientes Conjugados':
 
         print('Iniciando solver: Gradientes Conjugados')
@@ -188,8 +203,12 @@ model = {'K' : 1.0,
 T_tdma = lista5_2(n, tol, model, 'TDMA')
 T_jacobi = lista5_2(n, tol, model, 'Jacobi')
 T_gauss = lista5_2(n, tol, model, 'Gauss-Seidel')
+T_sor = lista5_2(n, tol, model, 'S.O.R')
 T_cg = lista5_2(n, tol, model, 'Gradientes Conjugados')
 
-#print(T_tdma)
-#print(T_jacobi)
-#print(T_gauss)
+np.set_printoptions(precision=2)
+#print(f'TDMA : {T_tdma}')
+#print(f'Jacobi : {T_jacobi}')
+#print(f'Gauss-Seidel : {T_gauss}')
+#print(f'S.O.R : {T_sor}')
+print(T_sor-T_tdma)

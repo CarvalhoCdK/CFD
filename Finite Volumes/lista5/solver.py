@@ -130,3 +130,45 @@ def jacobi(A, B, tol, t_initial):
             break
 
     return t, it
+
+
+def sor(A, B, tol, w=1.5, t_initial=1.0):
+    """
+    Linear system solver using Jacobi's method.
+    [A][t] = [B]
+    """
+    n = A.shape[0]
+    t = np.ones(n) * t_initial
+
+    diff = t_initial[0]
+    #tol = 1e-3#t_initial[0] * 0.01
+    max_it = 1e6
+    it = 0
+
+    while diff >= tol:
+
+        
+
+        for i in range(n):
+
+          #App = np.append(A[i,:i], A[i, i+1:])
+          #Tpp = np.append(t[:i], t[i+1:])
+            
+          #t[i] = (-np.dot(App, Tpp) + B[i]) / A[i, i]
+          t0 = np.copy(t)
+
+          pfront = np.dot(A[i,:i], t[:i])
+          pback = np.dot(A[i, i+1:], t[i+1:])
+
+          t[i] = (-pfront - pback + B[i]) / A[i, i]
+
+          t[i] = w * t[i] + (1-w) * t0[i]
+
+        diff = np.max(np.abs(t-t0))
+
+        it += 1
+        if it > max_it:
+            print('Excedido limite de iterações')
+            break
+
+    return t, it
