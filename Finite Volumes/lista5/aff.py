@@ -115,7 +115,7 @@ def lista5_2(n, tol, model, solver):
 
         elif i == n-1:
             # Ultimo volume
-            a = dirichlet(model)#newmann_direita(model)#
+            a = dirichlet(model)#newmann_direita(model)
             A[i, i-1] = -a[1]
 
             #print(f'{i} : Newmann')
@@ -131,10 +131,9 @@ def lista5_2(n, tol, model, solver):
         B[i] = a[3]
 
     #print(A)
-    #print(B)
 
     # SOLVER
- 
+
     # Condição inicial
     T = model['T0'] * np.ones(n)
 
@@ -149,7 +148,7 @@ def lista5_2(n, tol, model, solver):
     
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Tempo de execução: {end_time - start_time} \n')
+
     
     
     elif solver == 'Jacobi':
@@ -162,8 +161,7 @@ def lista5_2(n, tol, model, solver):
 
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Número de iterações: {itj}')
-        print(f'Tempo de execução: {end_time - start_time} \n')
+
     
 
     elif solver == 'Gauss-Seidel':
@@ -176,14 +174,13 @@ def lista5_2(n, tol, model, solver):
 
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Número de iterações: {itj}')
-        print(f'Tempo de execução: {end_time - start_time} \n')
+
 
 
     elif solver == 'S.O.R':
         print('Iniciando solver: S.O.R')
         T00 = np.copy(T)
-        w = 1.7
+        w = 1.5
 
         start_time = perf_counter()
         
@@ -191,8 +188,7 @@ def lista5_2(n, tol, model, solver):
 
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Número de iterações: {itj}')
-        print(f'Tempo de execução: {end_time - start_time} \n')
+
 
 
     elif solver == 'Gradientes Conjugados':
@@ -206,13 +202,12 @@ def lista5_2(n, tol, model, solver):
 
         end_time = perf_counter()
         print(f'Solução {n} volumes')
-        print(f'Número de iterações: {itj}')
-        print(f'Tempo de execução: {end_time - start_time} \n')
+
 
     return T
 
 
-n = 5
+n = 20
 L = 3
 tol = 1e-3
 
@@ -229,7 +224,7 @@ T_tdma = lista5_2(n, tol, model, 'TDMA')
 T_jacobi = lista5_2(n, tol, model, 'Jacobi')
 T_gauss = lista5_2(n, tol, model, 'Gauss-Seidel')
 T_sor = lista5_2(n, tol, model, 'S.O.R')
-T_cg = lista5_2(n, tol, model, 'Gradientes Conjugados')
+#T_cg = lista5_2(n, tol, model, 'Gradientes Conjugados')
 
 np.set_printoptions(precision=2)
 print(f'TDMA : {T_tdma}')

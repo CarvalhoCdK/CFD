@@ -8,7 +8,7 @@ def tdma(A, B, t_initial=1.0):
     """
 
     n = A.shape[0]
-    t = np.ones(n) * t_initial
+    t = np.ones(n)# * t_initial
 
     ## Rearange A, B terms in a, b, c, d
     a = np.zeros(n)
@@ -32,15 +32,29 @@ def tdma(A, B, t_initial=1.0):
       c[i] = A[i,i-1] # Aw
       d[i] = B[i]
 
+    #DEBUG PRINT
+    #print(f'a : {a}')
+    #print(f'b : {b}')
+    #print(f'c : {c}')
+    #print(f'd : {d}')
+
     ## Foward loop for p and q
     p = np.zeros(n)
     q = np.zeros(n)
     p[0] = -b[0] / a[0]
     q[0] = d[0] / a[0]
 
+    ##
+    #print(f'p[0] : {p[0]}')
+    #print(f'q[0] : {q[0]}')
+
     for i in np.arange(1,n):#range(1, n):
       p[i] = -b[i] / (a[i] + c[i]*p[i-1])
       q[i] = (d[i] - c[i]*q[i-1]) / (a[i] + c[i]*p[i-1])
+
+      ##
+      #print(f'p[i = {i}] : {p[i]}')
+      #print(f'q[i = {i}] : {q[i]}')
 
    
     ## Backward loop for t

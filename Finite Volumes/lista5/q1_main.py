@@ -18,7 +18,7 @@ def lista5_1(n, tol, model):
 
 
     #tol = 0.001
-    max_it = 1e6
+    max_it = 1e8
 
 
     def dirichlet(model):
@@ -189,6 +189,16 @@ model = {'K' : 10.0,
 ###############################################################################
 L = model['L']
 
+n = 25
+tol = 1e-2
+
+model['dx'] = L/n
+x10 = np.linspace(0,L,n)
+T10 = lista5_1(n, tol, model)
+print(T10)
+
+
+'''
 ## 10 Volumes
 n = 10
 tol = 1e-3
@@ -273,10 +283,12 @@ ax.tick_params(axis='both', which='major', labelsize=12)
 ax.legend()  
 ax.grid()
 fig.show()
+'''
 
 ###############################################################################
 ## PLOT TOLERÂNCIAS DIFERENTES
 ###############################################################################
+'''
 L = model['L']
 n = 80
 x = np.linspace(0,L,n)
@@ -334,3 +346,4 @@ ax.tick_params(axis='both', which='major', labelsize=12)
 ax.legend()  
 ax.grid()
 fig.show()
+'''
