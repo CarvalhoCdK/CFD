@@ -7,8 +7,8 @@ from plots import plot_field
 
 
 # Geometria
-nx = 40
-ny = 40
+nx = 4
+ny = 4
 lx = 1
 ly = 1
 

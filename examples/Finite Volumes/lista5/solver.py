@@ -1,6 +1,7 @@
 import numpy as np
+from numba import njit
 
-
+@njit
 def tdma(A, B, t_initial=1.0):
     """
     1D version

@@ -100,6 +100,8 @@ def lista5_1(n, tol, model):
     # Constroi matrizes da forma:
     # [A][T] = [b]+[A0][T0] 
 
+    print('Building model')
+
     A = np.zeros((n,n))
     A0 = np.zeros(n)
     b = np.zeros(n)
@@ -189,13 +191,13 @@ model = {'K' : 10.0,
 ###############################################################################
 L = model['L']
 
-n = 25
+n = 1000
 tol = 1e-2
 
 model['dx'] = L/n
 x10 = np.linspace(0,L,n)
 T10 = lista5_1(n, tol, model)
-print(T10)
+#print(T10)
 
 
 '''
