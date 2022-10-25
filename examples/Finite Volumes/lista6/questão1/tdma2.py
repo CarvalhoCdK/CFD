@@ -41,7 +41,7 @@ def tdma(A, B, T0, nelx: int, nely: int, tol=1e-4)->np.ndarray:
         p = np.zeros(n)
         q = np.zeros(n)
         p[0] = -b[0] / a[0]
-        q[0] = d[0] / a[0]
+     #   q[0] = d[0] / a[0]
 
 
     #while error > tol:
