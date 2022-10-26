@@ -4,14 +4,14 @@ import pandas as pd
 from time import perf_counter
 from scipy.sparse.linalg import isolve
 
-from interpolations import cds, uds
+from interpolations import cds, uds, wuds
 from solver import tdma
 from plots import plot1, compare
 
 
 def lista6_1(n, tol, model, solver, interpolation):
  
-    interpolation_map = {'CDS': cds, 'UDS' : uds}#, 'wuds' : wuds}
+    interpolation_map = {'CDS': cds, 'UDS' : uds, 'WUDS' : wuds}
     solver_map = {'TDMA' : tdma}
     
     A = np.zeros((n,n))
@@ -21,6 +21,7 @@ def lista6_1(n, tol, model, solver, interpolation):
     a = interpolation_map[interpolation](model, 'Left')
     A[0, 1] = -a[2]
     A[0, 0] = a[0]
+    B[0] = a[3]
 
     # Volumes internos
     for i in range(1,n-1):
@@ -29,36 +30,26 @@ def lista6_1(n, tol, model, solver, interpolation):
         A[i, i-1] = -a[1]
         A[i, i+1] = -a[2]
         A[i, i] = a[0]
+        B[i] = a[3]
         
     # Último volume
     a = interpolation_map[interpolation](model, 'Right')
     A[n-1,n-1] = a[0]
     A[n-1, n-2] = -a[1]
-    
     B[n-1] = a[3]
     
     print(f'Iniciando solver: {solver}')
     T = solver_map[solver](A, B)
 
-    return T
+    u = model['U']
+    print(f'U: {u}')
+    print(f'{interpolation}')
+    print(f'A: {A}')
+    print(f'B: {B}')
+    print(f'T : {T}')
 
-# Parâmetros
-n = 100
-L = 1
-tol = 1e-3
+    return T # np.append(np.append(t0, T), tf)
 
-model = {'U' : 0.0,
-        'Gamma' : 1.0,
-        'Rho' : 1.0,
-        'dx' : 1.0/n,
-        'Phi_0' : 0.0,
-        'Phi_1' : 1.0,
-        'L' : 1.0}
-
-t1 = 'u = 0'
-t2 = 'u = 10'
-t3 = 'u = 50'
-t4 = 'u = 100'
 
 # Solução analítica
 def analitic(x, model):
@@ -78,42 +69,84 @@ def analitic(x, model):
     return t
 
 
+# Parâmetros
+n = 20
+L = 1
+tol = 1e-6
+
+model = {'U' : 0.0,
+        'Gamma' : 0.10,
+        'Rho' : 1.0,
+        'dx' : 1.0/n,
+        'Phi_0' : 1.0,
+        'Phi_1' : 0.0,
+        'L' : 1.0}
+
+
 dx = model['dx']
 
-x = np.linspace(dx, 1-dx, n)
+TA = pd.DataFrame()
+TB = pd.DataFrame()
+TC = pd.DataFrame()
 
+x = np.linspace(dx/2, 1-dx/2, n)
+
+x_anl = np.linspace(dx/2, 1-dx/2, 10*n)
+x_anl = np.append(np.append(0, x_anl), L)
+t_anl = analitic(x_anl, model)
 
 ## u = 0
-TA = pd.DataFrame()
-TA[t1] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+model['U'] = 10
+velocidade = 'u = 0'
 
-t_anl = analitic(x, model)
+TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
+TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
+t_anl = analitic(x_anl, model)
 
-ax, fig = compare(x, TA[t1], t_anl)
-fig.show()
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax.set_title(velocidade) 
+#fig.show()
 
+'''
 ## u = 10
 model['U'] = 10
-TA[t2] = lista6_1(n, tol, model, 'TDMA', 'CDS')
-t_anl = analitic(x, model)
+velocidade = 'u = 10'
 
-ax, fig = compare(x, TA[t2], t_anl)
+TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
+TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
+t_anl = analitic(x_anl, model)
+
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax.set_title(velocidade) 
 fig.show()
 
 ## u = 50
 model['U'] = 50
-TA[t3] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+velocidade = 'u = 50'
 
-## u = 100
-model['U'] = 100
-TA[t4] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
+TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
+t_anl = analitic(x_anl, model)
 
-
-ax, fig = plot1(x, TA, t1,t2,t3,t4)
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax.set_title(velocidade) 
 fig.show()
 
 
-np.set_printoptions(precision=2)
-#print(f'TDMA : {T_A}')
+## u = 100
+model['U'] = 100
+velocidade = 'u = 100'
 
-#print(T_tdma[0:10])
+TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
+TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
+t_anl = analitic(x_anl, model)
+
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax.set_title(velocidade) 
+fig.show()
+
+'''

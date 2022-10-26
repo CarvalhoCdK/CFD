@@ -42,54 +42,78 @@ def cds(model, type):
     
 
 def uds(model, type):
-    """
-    """
-    Gamma = model['Gamma']
-    Rho = model['Rho']
-    U = model['U']
-    dx = model['dx']
-            
-    gdx = Gamma / dx  # auxiliar
-    ru = Rho*U  # auxiliar
-    b = 0
-    if type == 'Internal':
-        ap = ru + 2*gdx
-        aw = ru + gdx
-        ae = gdx
+        """
+        Condições de contorno criadas apenas para temperatura prescrita,
+        num problema unidimensional
+        """
+        Gamma = model['Gamma']
+        Rho = model['Rho']
+        U = model['U']
+        dx = model['dx']
+        phi0 = model['Phi_0']
+        phi1 = model['Phi_1']
+                
+        d = Gamma / dx # Auxiliar
+        f = Rho*U  # auxiliar
 
-    elif type == 'Left':
-        ap = ru + gdx
-        aw = 0
-        ae = gdx
+        b = 0
 
-    else: # 'Right'
-        ap = ru + gdx
-        aw = ru + gdx
-        ae = 0
-        
-    return np.array([ap, aw, ae, b])
+        if type == 'Internal':
+            ap = 2*d + f
+            aw = d + f
+            ae = d
 
-'''
-def wuds(model):
-    """
-    """
-    Gamma = model['Gamma']
-    Rho = model['Rho']
-    U = model['U']
-    dx = model['dx']
+        elif type == 'Left':
+            ap = 3*d + f
+            aw = 0
+            ae = d
+            b = 2*d*phi0 + f*phi0
 
-    gdx = Gamma / dx  # auxiliar
-    ru = Rho*U  # auxiliar
+        else: # 'Right'
+            ap = 3*d + f
+            aw = d + f
+            ae = 0
+            b = 2*d*phi1
+                
+        return np.array([ap, aw, ae, b])
 
-    Pe = ru*1 / gdx
-    Pe2 = Pe**2
 
-    alfa = Pe**2 / (10 + 2*Pe2)
-    beta = (1 + 0.005*Pe2) / (1 + 0.05*Pe2)
-            
-    aw = ru*(0.5 + alfa) + beta*gdx
-    ae = -ru*(0.5 - alfa) + beta*gdx
-    ap = aw + ae
-    
-    return np.array([ap, aw, ae])
-'''
+def wuds(model, type):
+        """
+        Condições de contorno criadas apenas para temperatura prescrita,
+        num problema unidimensional
+        """
+        Gamma = model['Gamma']
+        Rho = model['Rho']
+        U = model['U']
+        dx = model['dx']
+        phi0 = model['Phi_0']
+        phi1 = model['Phi_1']
+                
+        d = Gamma / dx # Auxiliar
+        f = Rho*U  # auxiliar
+
+        Pe = Rho*U*dx / Gamma
+        alfa = Pe**2 / (10 + 2*Pe*2)
+        beta = (1 + 0.005*Pe**2) / (1 + 0.05*Pe**2)
+
+        b = 0
+
+        if type == 'Internal':
+            ap = 2*beta*d + 2*alfa*f
+            aw = beta*d + (0.5 + alfa)*f
+            ae = beta*d - (0.5 - alfa)*f
+
+        elif type == 'Left':
+            ap = (beta + 2)*d + (0.5 + alfa)*f
+            aw = 0
+            ae = beta*d - (0.5 - alfa)*f
+            b = 2*d*phi0 + f*phi0
+
+        elif type == 'Right': # 'Right'
+            ap = (beta + 2)*d - (0.5 - alfa)*f
+            aw = beta*d + (0.5 + alfa)*f
+            ae = 0
+            b = 2*d*phi1 - f*phi1
+                
+        return np.array([ap, aw, ae, b])
