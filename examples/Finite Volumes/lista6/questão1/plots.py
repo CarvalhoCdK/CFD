@@ -6,12 +6,12 @@ def compare(x, ta, tb, tc, x0, t0):
 
     """
     """
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
 
     ax.plot(x0, t0, label='Solução Analítica')
     ax.plot(x, ta, label='CDS', linestyle='dashed', marker='+') 
     ax.plot(x, tb, label='UDS', linestyle='dashed', marker='+')
-    #ax.plot(x, tc, label='WUDS', linestyle='dashed', marker='.') 
+    ax.plot(x, tc, label='WUDS', linestyle='dashed', marker='.') 
 
     ax.set_xlabel('x', fontsize=14)  
     ax.set_ylabel('Temperatura', fontsize=14)

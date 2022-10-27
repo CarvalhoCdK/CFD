@@ -41,12 +41,13 @@ def lista6_1(n, tol, model, solver, interpolation):
     print(f'Iniciando solver: {solver}')
     T = solver_map[solver](A, B)
 
+    # Debug print
     u = model['U']
     print(f'U: {u}')
-    print(f'{interpolation}')
-    print(f'A: {A}')
-    print(f'B: {B}')
-    print(f'T : {T}')
+    #print(f'{interpolation}')
+    #print(f'A: {A}')
+    #print(f'B: {B}')
+    #print(f'T : {T}')
 
     return T # np.append(np.append(t0, T), tf)
 
@@ -70,16 +71,16 @@ def analitic(x, model):
 
 
 # Parâmetros
-n = 20
+n = 60
 L = 1
 tol = 1e-6
 
 model = {'U' : 0.0,
-        'Gamma' : 0.10,
+        'Gamma' : 1.0,
         'Rho' : 1.0,
         'dx' : 1.0/n,
-        'Phi_0' : 1.0,
-        'Phi_1' : 0.0,
+        'Phi_0' : 0.0,
+        'Phi_1' : 1.0,
         'L' : 1.0}
 
 
@@ -96,7 +97,7 @@ x_anl = np.append(np.append(0, x_anl), L)
 t_anl = analitic(x_anl, model)
 
 ## u = 0
-model['U'] = 10
+model['U'] = 0
 velocidade = 'u = 0'
 
 TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
@@ -108,7 +109,7 @@ ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_an
 ax.set_title(velocidade) 
 #fig.show()
 
-'''
+
 ## u = 10
 model['U'] = 10
 velocidade = 'u = 10'
@@ -149,4 +150,3 @@ ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_an
 ax.set_title(velocidade) 
 fig.show()
 
-'''

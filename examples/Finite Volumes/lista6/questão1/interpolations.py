@@ -97,6 +97,10 @@ def wuds(model, type):
         alfa = Pe**2 / (10 + 2*Pe*2)
         beta = (1 + 0.005*Pe**2) / (1 + 0.05*Pe**2)
 
+        # Debug print
+        print(f'alfa: {alfa}')
+        print(f'beta: {beta}')
+
         b = 0
 
         if type == 'Internal':
