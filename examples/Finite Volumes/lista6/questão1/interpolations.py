@@ -27,16 +27,31 @@ def cds(model, type):
             ae = d - f/2
 
         elif type == 'Left':
+
+            # Completa
+            #ap = 3*d + f/2
+            #aw = 0
+            #ae = d - f/2
+            #b = 2*d*phi0 + f*phi0
+
+            # Impermeável
             ap = 3*d + f/2
             aw = 0
             ae = d - f/2
-            b = 2*d*phi0 + f*phi0
+            b = 2*d*phi0 #+ f*phi0
 
-        else: # 'Right'
+        elif type == 'Right':
+            # Completa
+            #ap = 3*d - f/2
+            #aw = d + f/2
+            #ae = 0
+            #b = 2*d*phi1 - f*phi1
+
+            # Impermeável
             ap = 3*d - f/2
             aw = d + f/2
             ae = 0
-            b = 2*d*phi1 - f*phi1
+            b = 2*d*phi1
                 
         return np.array([ap, aw, ae, b])
     
@@ -109,15 +124,32 @@ def wuds(model, type):
             ae = beta*d - (0.5 - alfa)*f
 
         elif type == 'Left':
+            # Fronteira completa
             ap = (beta + 2)*d + (0.5 + alfa)*f
             aw = 0
             ae = beta*d - (0.5 - alfa)*f
             b = 2*d*phi0 + f*phi0
 
+            # Fronteira impermeável
+            #b = 2*d*phi0
+
         elif type == 'Right': # 'Right'
+            # Fronteira completa
             ap = (beta + 2)*d - (0.5 - alfa)*f
             aw = beta*d + (0.5 + alfa)*f
             ae = 0
-            b = 2*d*phi1 - f*phi1
+            #b = 2*d*phi1 - f*phi1
+
+            ap = (beta + 2)*d +f
+            b = 2*d*phi1 - (1/2 - alfa)*f*phi1
+
+            # Fronteira impermeável
+            #b = 2*d*phi1
+
+            # Fronteira com apenas fluxo advectivo
+            #ap = beta*d - (0.5 - alfa)*f
+            #aw = beta*d + (0.5 + alfa)*f
+            #ae = 0
+            #b = -f*phi1
                 
         return np.array([ap, aw, ae, b])

@@ -97,8 +97,8 @@ x_anl = np.append(np.append(0, x_anl), L)
 t_anl = analitic(x_anl, model)
 
 ## u = 0
-model['U'] = 0
-velocidade = 'u = 0'
+model['U'] = 60
+velocidade = f'u = 60'
 
 TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
 TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
