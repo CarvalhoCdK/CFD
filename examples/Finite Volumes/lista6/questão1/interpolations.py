@@ -29,29 +29,19 @@ def cds(model, type):
         elif type == 'Left':
 
             # Completa
-            #ap = 3*d + f/2
-            #aw = 0
-            #ae = d - f/2
-            #b = 2*d*phi0 + f*phi0
-
-            # Impermeável
             ap = 3*d + f/2
             aw = 0
             ae = d - f/2
-            b = 2*d*phi0 #+ f*phi0
+            b = 2*d*phi0 + f*phi0
+
 
         elif type == 'Right':
             # Completa
-            #ap = 3*d - f/2
-            #aw = d + f/2
-            #ae = 0
-            #b = 2*d*phi1 - f*phi1
-
-            # Impermeável
             ap = 3*d - f/2
             aw = d + f/2
             ae = 0
-            b = 2*d*phi1
+            b = 2*d*phi1 - f*phi1
+
                 
         return np.array([ap, aw, ae, b])
     
@@ -113,8 +103,8 @@ def wuds(model, type):
         beta = (1 + 0.005*Pe**2) / (1 + 0.05*Pe**2)
 
         # Debug print
-        print(f'alfa: {alfa}')
-        print(f'beta: {beta}')
+        #print(f'alfa: {alfa}')
+        #print(f'beta: {beta}')
 
         b = 0
 
@@ -125,31 +115,28 @@ def wuds(model, type):
 
         elif type == 'Left':
             # Fronteira completa
-            ap = (beta + 2)*d + (0.5 + alfa)*f
-            aw = 0
-            ae = beta*d - (0.5 - alfa)*f
-            b = 2*d*phi0 + f*phi0
+            #ap = (beta + 2)*d + (0.5 + alfa)*f
+            #aw = 0
+            #ae = beta*d - (0.5 - alfa)*f
+            #b = 2*d*phi0 + f*phi0
 
-            # Fronteira impermeável
-            #b = 2*d*phi0
+            # Volume fictícios
+            ap = 1/2 + alfa
+            aw = 0
+            ae = -1/2 + alfa
+            b = phi0
 
         elif type == 'Right': # 'Right'
             # Fronteira completa
-            ap = (beta + 2)*d - (0.5 - alfa)*f
-            aw = beta*d + (0.5 + alfa)*f
-            ae = 0
-            #b = 2*d*phi1 - f*phi1
-
-            ap = (beta + 2)*d +f
-            b = 2*d*phi1 - (1/2 - alfa)*f*phi1
-
-            # Fronteira impermeável
-            #b = 2*d*phi1
-
-            # Fronteira com apenas fluxo advectivo
-            #ap = beta*d - (0.5 - alfa)*f
+            #ap = (beta + 2)*d - (0.5 - alfa)*f
             #aw = beta*d + (0.5 + alfa)*f
             #ae = 0
-            #b = -f*phi1
+            #b = 2*d*phi1 - f*phi1
+
+            # Volumes fictícios
+            ap = 0.5 + alfa
+            aw = -0.5 + alfa
+            ae = 0
+            b = phi1
                 
         return np.array([ap, aw, ae, b])

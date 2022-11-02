@@ -14,36 +14,71 @@ def lista6_1(n, tol, model, solver, interpolation):
     interpolation_map = {'CDS': cds, 'UDS' : uds, 'WUDS' : wuds}
     solver_map = {'TDMA' : tdma}
     
-    A = np.zeros((n,n))
-    B = np.zeros(n)
-    # ap, aw, ae, b
-    # Primeiro volume
-    a = interpolation_map[interpolation](model, 'Left')
-    A[0, 1] = -a[2]
-    A[0, 0] = a[0]
-    B[0] = a[3]
+    
 
-    # Volumes internos
-    for i in range(1,n-1):
+    if interpolation == 'WUDS':
 
-        a = interpolation_map[interpolation](model, 'Internal')
-        A[i, i-1] = -a[1]
-        A[i, i+1] = -a[2]
-        A[i, i] = a[0]
-        B[i] = a[3]
+      n += 2
+      A = np.zeros((n,n))
+      B = np.zeros(n)
+
+      # Primeiro volume
+      a = interpolation_map[interpolation](model, 'Left')
+      A[0, 1] = -a[2]
+      A[0, 0] = a[0]
+      B[0] = a[3]
+
+      # Volumes internos
+      for i in range(1,n-1):
+
+          a = interpolation_map[interpolation](model, 'Internal')
+          A[i, i-1] = -a[1]
+          A[i, i+1] = -a[2]
+          A[i, i] = a[0]
+          B[i] = a[3]
+          
+      # Último volume
+      a = interpolation_map[interpolation](model, 'Right')
+      A[n-1,n-1] = a[0]
+      A[n-1, n-2] = -a[1]
+      B[n-1] = a[3]
+    
+      
+
+    else:
+
+      A = np.zeros((n,n))
+      B = np.zeros(n)
+      # ap, aw, ae, b
         
-    # Último volume
-    a = interpolation_map[interpolation](model, 'Right')
-    A[n-1,n-1] = a[0]
-    A[n-1, n-2] = -a[1]
-    B[n-1] = a[3]
+      # Primeiro volume
+      a = interpolation_map[interpolation](model, 'Left')
+      A[0, 1] = -a[2]
+      A[0, 0] = a[0]
+      B[0] = a[3]
+
+      # Volumes internos
+      for i in range(1,n-1):
+
+          a = interpolation_map[interpolation](model, 'Internal')
+          A[i, i-1] = -a[1]
+          A[i, i+1] = -a[2]
+          A[i, i] = a[0]
+          B[i] = a[3]
+          
+      # Último volume
+      a = interpolation_map[interpolation](model, 'Right')
+      A[n-1,n-1] = a[0]
+      A[n-1, n-2] = -a[1]
+      B[n-1] = a[3]
     
     print(f'Iniciando solver: {solver}')
+    print(f'Interpolação: {interpolation}')
     T = solver_map[solver](A, B)
 
     # Debug print
-    u = model['U']
-    print(f'U: {u}')
+    #u = model['U']
+    #print(f'U: {u}')
     #print(f'{interpolation}')
     #print(f'A: {A}')
     #print(f'B: {B}')
@@ -71,7 +106,7 @@ def analitic(x, model):
 
 
 # Parâmetros
-n = 60
+n = 20
 L = 1
 tol = 1e-6
 
@@ -92,11 +127,13 @@ TC = pd.DataFrame()
 
 x = np.linspace(dx/2, 1-dx/2, n)
 
+x_wuds = np.linspace(0, 1, n+2)
+
 x_anl = np.linspace(dx/2, 1-dx/2, 10*n)
 x_anl = np.append(np.append(0, x_anl), L)
 t_anl = analitic(x_anl, model)
 
-## u = 0
+####### TESTE u = 0
 model['U'] = 60
 velocidade = f'u = 60'
 
@@ -105,9 +142,26 @@ TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
 TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
 t_anl = analitic(x_anl, model)
 
-ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade][1:-1], x_anl, t_anl)
 ax.set_title(velocidade) 
-#fig.show()
+fig.show()
+
+print('EoF')
+########
+
+## u = 0
+model['U'] = 0
+velocidade = 'u = 0'
+
+TA[velocidade] = lista6_1(n, tol, model, 'TDMA', 'CDS')
+TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
+TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
+t_anl = analitic(x_anl, model)
+
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade][1:-1], x_anl, t_anl)
+ax.set_title(velocidade) 
+fig.show()
+
 
 
 ## u = 10
@@ -119,7 +173,7 @@ TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
 TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
 t_anl = analitic(x_anl, model)
 
-ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade][1:-1], x_anl, t_anl)
 ax.set_title(velocidade) 
 fig.show()
 
@@ -132,7 +186,7 @@ TB[velocidade] = lista6_1(n, tol, model, 'TDMA', 'UDS')
 TC[velocidade] = lista6_1(n, tol, model, 'TDMA', 'WUDS')
 t_anl = analitic(x_anl, model)
 
-ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade], x_anl, t_anl)
+ax, fig = compare(x, TA[velocidade], TB[velocidade], TC[velocidade][1:-1], x_anl, t_anl)
 ax.set_title(velocidade) 
 fig.show()
 

@@ -7,8 +7,8 @@ from plots import plot_field
 
 
 # Geometria
-nx = 4
-ny = 4
+nx = 3
+ny = 3
 lx = 1
 ly = 1
 
@@ -165,4 +165,6 @@ for i, tp in enumerate(u_dof):
 
 shading = 'nearest'
 plot_field(nx, ny, lx, ly, Tplot)
+
+print('EoF')
 
