@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-@njit
+#@njit
 def tdma(A, B, t_initial=1.0):
     """
     1D version
@@ -75,7 +75,7 @@ def gauss_seidel(A, B, tol, t_initial=1.0):
     n = A.shape[0]
     t = np.ones(n) * t_initial
 
-    diff = t_initial#[0]
+    diff = t_initial
     #tol = 1e-3#t_initial[0] * 0.01
     max_it = 1e6
     it = 0

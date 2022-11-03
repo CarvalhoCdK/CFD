@@ -17,6 +17,7 @@ class WUDS(object):
         gamma = self.model['gamma']
         deltax = self.model['deltax']
         deltay = self.model['deltay']
+        sp = self.model['sp']
 
         fx = rho*u*deltay
         fy = rho*v*deltax
@@ -35,7 +36,7 @@ class WUDS(object):
         Ae = -(0.5 - alfax)*fx + betax*dx
         As =  (0.5 + alfay)*fy + betay*dy
         An = -(0.5 + alfay)*fy + betay*dy
-        Ap = Aw + Ae + As + An
+        Ap = Aw + Ae + As + An - sp*deltax*deltay
 
         return np.array([Ap, Aw, Ae, As, An, 0])
 
@@ -57,7 +58,7 @@ class WUDS(object):
         Pe = rho*u*dx / gamma
         alfax = Pe**2 / (10 + 2*Pe*2)
         # y :>
-        Pe = rho*v*dx / gamma
+        Pe = rho*v*dy / gamma
         alfay = Pe**2 / (10 + 2*Pe*2)
 
         A =  np.zeros(6)
@@ -74,12 +75,12 @@ class WUDS(object):
             A[1] = -0.5 + alfax  # Aw
 
         if face =='S':
-            A[0] = 0.5 + alfax  # Ap
-            A[4] = -0.5 + alfax  # An
+            A[0] = 0.5 + alfay  # Ap
+            A[4] = -0.5 + alfay  # An
 
         if face =='N':
-            A[0] = 0.5 + alfax  # Ap
-            A[3] = -0.5 + alfax  # As
+            A[0] = 0.5 + alfay  # Ap
+            A[3] = -0.5 + alfay  # As
 
 
         return A
